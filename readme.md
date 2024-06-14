@@ -18,14 +18,9 @@ project-root/
 │   ├── config/
 │   ├── server.js
 │   └── README.md
+│   ├── sql/
+│       ├── schema.sql
+│       └── README.md
 │
-├── esp/
-│   ├── main.ino
-│   ├── config.h
-│   └── README.md
-│
-├── sql/
-│   ├── schema.sql
-│   └── README.md
 │
 └── README.md
