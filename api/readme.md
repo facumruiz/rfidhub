@@ -53,73 +53,16 @@ Este proyecto es un sistema de autenticación RFID utilizando `Node.js`, `Expres
     PORT=3000
     ```
 
-3. Asegúrate de que tu base de datos MySQL esté configurada y contiene las tablas necesarias. Puedes usar el siguiente script SQL para crear la base de datos y las tablas:
-
-    ```sql
-    CREATE DATABASE AccesoRFID;
-    USE AccesoRFID;
-
-    CREATE TABLE Usuarios (
-        DNI VARCHAR(10) PRIMARY KEY,
-        nombre VARCHAR(100)
-    );
-
-    CREATE TABLE Info_Adicional_Usuarios (
-        DNI VARCHAR(10) PRIMARY KEY,
-        cargo VARCHAR(100),
-        direccion VARCHAR(255),
-        localidad VARCHAR(100),
-        FOREIGN KEY (DNI) REFERENCES Usuarios(DNI)
-    );
-
-    CREATE TABLE Autenticacion (
-        uid_rfid VARCHAR(50) PRIMARY KEY,
-        DNI VARCHAR(10) REFERENCES Usuarios(DNI)
-    );
-
-    CREATE TABLE Registros (
-        id SERIAL PRIMARY KEY,
-        DNI VARCHAR(10) REFERENCES Usuarios(DNI),
-        fecha_hora TIMESTAMP
-    );
-
-    INSERT INTO Usuarios (DNI, nombre)
-    VALUES ('42629696', 'Facundo Ruiz');
-
-    INSERT INTO Autenticacion (uid_rfid, DNI)
-    VALUES ('103021093187', '42629696');
-
-    DELIMITER //
-
-    CREATE PROCEDURE AutenticarUsuario(IN uid_rfid_input VARCHAR(50))
-    BEGIN
-        DECLARE usuario_DNI VARCHAR(10);
-
-        SELECT DNI INTO usuario_DNI
-        FROM Autenticacion
-        WHERE uid_rfid = uid_rfid_input;
-
-        IF usuario_DNI IS NULL THEN
-            SIGNAL SQLSTATE '45000' 
-            SET MESSAGE_TEXT = 'Error: uid_rfid no encontrado en Autenticacion.';
-        ELSE
-            INSERT INTO Registros (DNI, fecha_hora)
-            VALUES (usuario_DNI, NOW());
-        END IF;
-    END //
-
-    DELIMITER ;
-    ```
 
 ## Ejecución
 
-4. Inicia el servidor:
+3. Inicia el servidor:
 
     ```bash
     node server.js
     ```
 
-5. El servidor se ejecutará en `http://localhost:3000`.
+4. El servidor se ejecutará en `http://localhost:3000`.
 
 ## Descripción del Código
 
