@@ -14,7 +14,7 @@ async function autenticarUsuario(uid_rfid, io) {
     io.emit('actualizarTabla', resultado);
 
     // Publicar el resultado en el nuevo tópico MQTT
-    client.publish(resultTopic, JSON.stringify({ uid_rfid, resultado }), { qos: 1 }, (err) => {
+    client.publish(resultTopic, resultado.toString(), { qos: 1 }, (err) => {
       if (err) {
         console.error('Error al publicar en el tópico MQTT:', err);
       } else {
