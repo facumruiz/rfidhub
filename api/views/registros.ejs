@@ -14,6 +14,16 @@
 <body>
   <div class="container mt-5">
     <h1 class="mb-4">Registros</h1>
+    
+    <!-- Formulario de búsqueda -->
+    <form method="GET" action="/" class="form-inline mb-4">
+      <div class="form-group mr-2">
+        <label for="fecha" class="mr-2">Fecha:</label>
+        <input type="date" id="fecha" name="fecha" class="form-control" value="<%= fecha %>">
+      </div>
+      <button type="submit" class="btn btn-primary">Buscar</button>
+    </form>
+    
     <table class="table table-bordered">
       <thead class="thead-dark">
         <tr>
@@ -32,6 +42,26 @@
         <% }) %>
       </tbody>
     </table>
+
+    <nav aria-label="Page navigation">
+      <ul class="pagination justify-content-center">
+        <% if (page > 1) { %>
+          <li class="page-item"><a class="page-link" href="?page=<%= page - 1 %>&fecha=<%= fecha %>">Previous</a></li>
+        <% } else { %>
+          <li class="page-item disabled"><span class="page-link">Previous</span></li>
+        <% } %>
+        
+        <% for (let i = 1; i <= totalPages; i++) { %>
+          <li class="page-item <%= page === i ? 'active' : '' %>"><a class="page-link" href="?page=<%= i %>&fecha=<%= fecha %>"><%= i %></a></li>
+        <% } %>
+
+        <% if (page < totalPages) { %>
+          <li class="page-item"><a class="page-link" href="?page=<%= page + 1 %>&fecha=<%= fecha %>">Next</a></li>
+        <% } else { %>
+          <li class="page-item disabled"><span class="page-link">Next</span></li>
+        <% } %>
+      </ul>
+    </nav>
   </div>
 </body>
 </html>
