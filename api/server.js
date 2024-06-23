@@ -11,6 +11,10 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIo(server);
 
+// Configurar EJS como motor de vistas
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
+
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(registrosRouter);
 
@@ -63,3 +67,4 @@ function extraerUidRfid(mensaje) {
   const match = mensaje.match(regex);
   return match ? match[1] : null;
 }
+
