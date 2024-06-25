@@ -1,8 +1,8 @@
-# Proyecto DETECTOR_RFID para la carrera de sistemas embebidos
+# Proyecto Backend (API) para el proyecto de LectorRFID
 
 ## Estructura del Proyecto
 
-Este proyecto está organizado en tres directorios principales: `api`, `esp` y `sql`. Cada uno de estos directorios tiene un propósito específico y contiene los archivos y recursos necesarios para su función.
+Este proyecto está organizado en tres directorios principales: `api`.
 
 ### Estructura del Proyecto
 
