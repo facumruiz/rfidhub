@@ -91,8 +91,8 @@ Este proyecto es un sistema de autenticación RFID utilizando `Node.js`, `Expres
 ### Express y Socket.io
 
 - Configura un servidor HTTP utilizando Express y Socket.io.
-- Sirve archivos estáticos desde la carpeta `public`.
-- Define una ruta `/registros` para mostrar los registros almacenados en la base de datos.
+- Sirve archivos estáticos desde la carpeta `views`.
+- Define una ruta `/` para mostrar los registros almacenados en la base de datos.
 
 ### Iniciar el Servidor
 
