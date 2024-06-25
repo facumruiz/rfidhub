@@ -1,4 +1,4 @@
-# Proyecto Backend (API) para el proyecto de LectorRFID
+# Backend (API) para el proyecto de LectorRFID
 
 ## Estructura del Proyecto
 
