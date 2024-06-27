@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Administración de Usuarios y Autenticaciones</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+</head>
+<body>
+  <div class="container mt-5">
+    <h1 class="mb-4">Administración de Usuarios y Autenticaciones</h1>
+
+    <!-- Formulario para agregar usuarios -->
+    <h2>Agregar Usuario</h2>
+    <form id="addUserForm" method="POST" action="/admin/users">
+      <div class="form-group">
+        <label for="dni">DNI:</label>
+        <input type="text" class="form-control" id="dni" name="dni" required>
+      </div>
+      <div class="form-group">
+        <label for="nombre">Nombre:</label>
+        <input type="text" class="form-control" id="nombre" name="nombre" required>
+      </div>
+      <div class="form-group">
+        <label for="cargo_id">Cargo ID:</label>
+        <input type="number" class="form-control" id="cargo_id" name="cargo_id" required>
+      </div>
+      <div class="form-group">
+        <label for="nacionalidad_id">Nacionalidad ID:</label>
+        <input type="number" class="form-control" id="nacionalidad_id" name="nacionalidad_id" required>
+      </div>
+      <button type="submit" class="btn btn-primary">Agregar Usuario</button>
+    </form>
+
+    <hr>
+
+    <!-- Formulario para agregar autenticaciones -->
+    <h2>Agregar Autenticación</h2>
+    <form id="addAuthForm" method="POST" action="/admin/auth">
+      <div class="form-group">
+        <label for="uid_rfid">UID RFID:</label>
+        <input type="text" class="form-control" id="uid_rfid" name="uid_rfid" required>
+      </div>
+      <div class="form-group">
+        <label for="auth_dni">DNI:</label>
+        <input type="text" class="form-control" id="auth_dni" name="auth_dni" required>
+      </div>
+      <button type="submit" class="btn btn-primary">Agregar Autenticación</button>
+    </form>
+
+    <hr>
+
+    <!-- Tabla de usuarios -->
+    <h2>Usuarios</h2>
+    <table class="table table-bordered">
+      <thead class="thead-dark">
+        <tr>
+          <th>DNI</th>
+          <th>Nombre</th>
+          <th>Cargo ID</th>
+          <th>Nacionalidad ID</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% users.forEach(user => { %>
+          <tr>
+            <td><%= user.DNI %></td>
+            <td><%= user.nombre %></td>
+            <td><%= user.cargo_id %></td>
+            <td><%= user.nacionalidad_id %></td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+
+    <hr>
+
+    <!-- Tabla de autenticaciones -->
+    <h2>Autenticaciones</h2>
+    <table class="table table-bordered">
+      <thead class="thead-dark">
+        <tr>
+          <th>UID RFID</th>
+          <th>DNI</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% auths.forEach(auth => { %>
+          <tr>
+            <td><%= auth.uid_rfid %></td>
+            <td><%= auth.DNI %></td>
+            <td>
+              <form method="POST" action="/admin/auth/<%= auth.uid_rfid %>?_method=DELETE" style="display:inline;">
+                <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
+              </form>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</body>
+</html>
