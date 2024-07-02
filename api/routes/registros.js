@@ -13,7 +13,7 @@ router.get('/', async (req, res) => {
   let params = [];
 
   if (fecha) {
-    whereClause += 'WHERE DATE(fecha_hora) = ? ';
+    whereClause += 'WHERE DATE(r.fecha_hora) = ? ';
     params.push(fecha);
   }
 
@@ -21,8 +21,19 @@ router.get('/', async (req, res) => {
 
   try {
     connection = await getConnection();
-    const [rows] = await connection.execute(`SELECT * FROM Registros ${whereClause}LIMIT ?, ?`, params);
-    const [countResult] = await connection.execute(`SELECT COUNT(*) as count FROM Registros ${whereClause}`, params.slice(0, -2));
+    const [rows] = await connection.execute(`
+      SELECT r.id, u.nombre, r.DNI, c.nombre_cargo, r.fecha_hora 
+      FROM Registros r
+      JOIN Usuarios u ON r.DNI = u.DNI
+      JOIN Cargos c ON u.cargo_id = c.id
+      ${whereClause}
+      LIMIT ?, ?
+    `, params);
+    const [countResult] = await connection.execute(`
+      SELECT COUNT(*) as count 
+      FROM Registros r
+      ${whereClause}
+    `, params.slice(0, -2));
     const totalRecords = countResult[0].count;
     const totalPages = Math.ceil(totalRecords / limit);
 
@@ -38,4 +49,3 @@ router.get('/', async (req, res) => {
 });
 
 module.exports = router;
-

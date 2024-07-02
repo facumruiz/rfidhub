@@ -26,7 +26,7 @@ router.post('/admin/users', async (req, res) => {
   let connection;
   try {
     connection = await getConnection();
-    await connection.execute('INSERT INTO Usuarios (DNI, nombre, cargo_id, nacionalidad_id) VALUES (?, ?, ?, ?)', [dni, nombre, cargo_id, nacionalidad_id]);
+    await connection.execute('INSERT INTO Usuarios (DNI, nombre) VALUES (?, ?)', [dni, nombre]);
     res.redirect('/admin');
   } catch (err) {
     console.error('Error al agregar el usuario:', err.message);
