@@ -4,8 +4,16 @@
   <title>Administración de Usuarios y Autenticaciones</title>
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
   <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
   <script>
     $(document).ready(function() {
+      var socket = io(); // Conectar al servidor de Socket.IO
+
+      // Manejar evento de recibir UID RFID desde el servidor
+      socket.on('uid_rfid', function(uid_rfid) {
+        $('#uid_rfid').val(uid_rfid); // Actualizar el valor del campo UID RFID en el formulario
+      });
+
       // Manejador de clic en las filas de la tabla de usuarios
       $('#userTable tbody tr').click(function() {
         var dni = $(this).find('td').eq(0).text(); // Obtener el DNI de la primera columna

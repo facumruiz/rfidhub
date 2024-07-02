@@ -22,7 +22,7 @@ router.get('/admin', async (req, res) => {
 
 // Ruta para agregar un usuario
 router.post('/admin/users', async (req, res) => {
-  const { dni, nombre, cargo_id, nacionalidad_id } = req.body;
+  const { dni, nombre } = req.body;
   let connection;
   try {
     connection = await getConnection();

@@ -60,6 +60,9 @@ client.on('message', (topic, message) => {
     if (uid_rfid) {
       console.log(`Mensaje recibido en ${topic}: ${uid_rfid}`);
       autenticarUsuario(uid_rfid, io);
+
+      // Enviar el UID RFID a través de Socket.IO al cliente
+      io.emit('uid_rfid', uid_rfid);
     } else {
       console.log('No se encontró un número de uid_rfid válido en el mensaje:', mensaje);
     }
