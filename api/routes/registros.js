@@ -27,6 +27,7 @@ router.get('/', async (req, res) => {
       JOIN Usuarios u ON r.DNI = u.DNI
       JOIN Cargos c ON u.cargo_id = c.id
       ${whereClause}
+      ORDER BY r.id ASC
       LIMIT ?, ?
     `, params);
     const [countResult] = await connection.execute(`
