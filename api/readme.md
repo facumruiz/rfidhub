@@ -1,103 +1,80 @@
 # Sistema de Autenticación RFID con Express, MQTT y MySQL
+El proyecto de Backend de autenticación RFID se centra en desarrollar una API robusta para gestionar el acceso mediante tarjetas RFID. Utilizando tecnologías como Node.js, Express, MQTT y MySQL, esta API permite registrar usuarios, administrar autenticaciones basadas en RFID y consultar registros de acceso en tiempo real. Integrando [Socket.IO](http://socket.io/), se facilita la comunicación bidireccional para actualizar la interfaz de usuario en tiempo real con eventos MQTT.
 
-Este proyecto es un sistema de autenticación RFID utilizando `Node.js`, `Express`, `MQTT` y `MySQL`. El sistema se conecta a un broker MQTT, escucha mensajes de UID RFID y autentica a los usuarios en una base de datos MySQL.
+# **Estructura del Proyecto**
 
-## Requisitos
+```jsx
+project-root/
+│
+├── api/
+│   ├── .env
+│   ├── package.json
+│   ├── public/
+│   ├── routes/
+│   │   ├── admin.js
+│   │   └── registros.js
+│   ├── controllers/
+│   │   └── userController.js
+│   ├── config/
+│   │   ├── db.js
+│   │   └── mqtt.js
+│   ├── server.js
+│   └── README.md
+└── sql/
+├── schema.sql
+└── README.md
 
-- Node.js
-- MySQL
-- Un broker MQTT (como Mosquitto)
-  
-## Estructura del proyecto
+```
+
+## Descripción de Componentes
+
+- **api/config/mqtt.js**: Configuración para la conexión MQTT.
+- **api/controllers/userController.js**: Controlador para la lógica de negocio de autenticación de usuarios.
+- **api/routes/admin.js**: Rutas para la administración de usuarios y autenticaciones.
+- **api/routes/registros.js**: Rutas para consultar registros.
+- **api/server.js**: Configuración del servidor Express y [Socket.IO](http://socket.io/) para la comunicación en tiempo real.
+
+### Configuraciones Importantes
+
+- MySQL: Almacena datos de usuarios, autenticaciones y registros.
+- MQTT: Comunicación de resultados de autenticación en tiempo real.
+- Express y EJS: Servidor web y renderización de vistas.
+
+### Endpoints Principales
+
+- `GET /admin`: Renderiza la página de administración con usuarios y autenticaciones.
+- `POST /admin/users`: Agrega un nuevo usuario a la base de datos.
+- `POST /admin/auth`: Agrega una nueva autenticación de usuario mediante RFID.
+- `DELETE /admin/auth/:uid_rfid`: Elimina una autenticación basada en el UID RFID proporcionado.
+- `GET /`: Muestra registros paginados con filtro opcional por fecha.
+
+### Funcionalidades Clave
+
+- Autenticación de Usuario: Utiliza MQTT para recibir y procesar datos RFID en tiempo real.
+- Administración de Usuarios: Permite agregar y listar usuarios, así como gestionar autenticaciones.
+
+### Requerimientos para Correr el Proyecto
+
+1. **Node.js y npm**: Instala Node.js desde su sitio oficial.
+2. **Variables de Entorno**: Crea un archivo `.env` en el directorio `api/` con las siguientes variables:
+    
     ```
-    api/
-    │
-    ├── config/
-    │   └── db.js
-    │   └── mqtt.js
-    │
-    ├── controllers/
-    │   └── userController.js
-    │
-    ├── routes/
-    │   └── registros.js
-    │
-    ├── public/
-    │   └── (assets like CSS, JS, images)
-    │
-    ├── server.js
-    │
-    └── .env
-    ```
-
-## Configuración
-
-1. Instala las dependencias:
-
-    ```bash
-    npm install
-    ```
-
-
-2. Crea un archivo `.env` en la raíz del proyecto con el siguiente contenido, ajustando los valores según tu configuración:
-
-    ```plaintext
     DB_HOST=localhost
     DB_PORT=3306
-    DB_USER=tu_usuario
-    DB_PASSWORD=tu_contraseña
+    DB_USER=usuario_mysql
+    DB_PASSWORD=contraseña_mysql
     DB_NAME=AccesoRFID
-
-    MQTT_BROKER_URL=mqtt://tu_broker_url
-    MQTT_TOPIC=tu_tema
-    PORT=3000
+    MQTT_BROKER_URL=tu_url_broker_mqtt
+    MQTT_TOPIC=tu_topico_mqtt
+    MQTT_RESULT_TOPIC=tu_topico_resultado_mqtt
+    
     ```
+    
 
+### Configuración Inicial
 
-## Ejecución
+1. **Instalar Dependencias**: Ejecuta `npm install` en la raíz del proyecto.
 
-3. Inicia el servidor:
+### Ejecución del Servidor
 
-    ```bash
-    node server.js
-    ```
-
-4. El servidor se ejecutará en `http://localhost:3000`.
-
-## Descripción del Código
-
-- `require('dotenv').config();`: Carga las variables de entorno del archivo `.env`.
-- `const express = require('express');`: Importa el framework Express.
-- `const mqtt = require('mqtt');`: Importa la biblioteca MQTT para Node.js.
-- `const mysql = require('mysql2/promise');`: Importa el cliente MySQL para Node.js con soporte para promesas.
-- `const path = require('path');`: Importa el módulo `path` para trabajar con rutas de archivos.
-- `const http = require('http');`: Importa el módulo HTTP para crear el servidor.
-- `const socketIo = require('socket.io');`: Importa `Socket.io` para la comunicación en tiempo real.
-
-### Configuración de la base de datos y MQTT
-
-- Configura los detalles de conexión a la base de datos y al broker MQTT utilizando las variables de entorno.
-
-### Funciones
-
-- `extraerUidRfid(mensaje)`: Extrae el UID RFID de un mensaje recibido.
-- `autenticarUsuario(uid_rfid, io)`: Autentica el usuario en la base de datos utilizando el UID RFID y emite un evento para actualizar la interfaz en tiempo real.
-
-### MQTT
-
-- Maneja la conexión al broker MQTT, la suscripción al tópico especificado y la recepción de mensajes.
-- Cuando se recibe un mensaje, se extrae el UID RFID y se llama a `autenticarUsuario`.
-
-### Express y Socket.io
-
-- Configura un servidor HTTP utilizando Express y Socket.io.
-- Sirve archivos estáticos desde la carpeta `views`.
-- Define una ruta `/` para mostrar los registros almacenados en la base de datos.
-
-### Iniciar el Servidor
-
-- El servidor se inicia y escucha en el puerto especificado en las variables de entorno o en el puerto 3000 por defecto.
-
-## Licencia
-
-Este proyecto está bajo la licencia MIT.
+1. **Iniciar Servidor**: Ejecuta npm start en la raíz del proyecto. El servidor se ejecutará en http://localhost:3000 (o el puerto definido en las variables de entorno).
