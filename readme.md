@@ -1,9 +1,5 @@
 # Backend (API) para el proyecto de LectorRFID
 
-## Estructura del Proyecto
-
-Este proyecto está organizado en tres directorios principales: `api`.
-
 ### Estructura del Proyecto
 
 ```plaintext
