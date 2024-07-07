@@ -1,21 +1,24 @@
+// Cargar variables de entorno desde el archivo .env
 require('dotenv').config();
+
+// Importar módulos y configuraciones necesarias
 const express = require('express');
 const path = require('path');
 const http = require('http');
 const socketIo = require('socket.io');
 const methodOverride = require('method-override');
-const { client, topic } = require('./config/mqtt');
-const { autenticarUsuario } = require('./controllers/userController');
-const registrosRouter = require('./routes/registros');
-const adminRouter = require('./routes/admin');
+const { client, topic } = require('./config/mqtt'); // Importar cliente MQTT y tópico
+const { autenticarUsuario } = require('./controllers/userController'); // Importar función para autenticar usuario desde el controlador
+const registrosRouter = require('./routes/registros'); // Importar rutas para registros
+const adminRouter = require('./routes/admin'); // Importar rutas para administración
 
-const app = express();
-const server = http.createServer(app);
-const io = socketIo(server);
+const app = express(); // Crear una instancia de la aplicación Express
+const server = http.createServer(app); // Crear servidor HTTP usando Express
+const io = socketIo(server); // Configurar Socket.IO para comunicación en tiempo real
 
 // Configurar EJS como motor de vistas
-app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'ejs'); // Configurar EJS como motor de plantillas
+app.set('views', path.join(__dirname, 'views')); // Establecer la carpeta de vistas
 
 // Middleware para manejar archivos estáticos
 app.use(express.static(path.join(__dirname, 'public')));
@@ -26,65 +29,48 @@ app.use(express.urlencoded({ extended: true }));
 // Middleware para permitir métodos HTTP PUT y DELETE
 app.use(methodOverride('_method'));
 
-// Rutas para la aplicación
-app.use(registrosRouter); // Rutas para los registros
-app.use(adminRouter); // Rutas para la administración de usuarios y autenticaciones
+// Configurar las rutas de la aplicación
+app.use(registrosRouter); // Rutas para manejar registros
+app.use(adminRouter); // Rutas para administración de usuarios y autenticaciones
 
 // Configuración de Socket.IO para eventos en tiempo real
-let lastMessageTime = 0; // Variable para almacenar el tiempo del último mensaje procesado
-const messageDelay = 5000; // Retardo en milisegundos (por ejemplo, 5000 ms = 5 segundos)
+let lastMessageTime = 0;
+const messageDelay = 10000; // Retraso mínimo entre mensajes para evitar procesamiento duplicado
 
 // Conexión al broker MQTT y suscripción al tópico
 client.on('connect', () => {
-  console.log('Conectado al broker MQTT');
-  client.subscribe(topic, (err) => {
+  console.log('Conexión establecida con el broker MQTT');
+  // Suscripción al tópico MQTT con calidad de servicio (QoS) 1
+  client.subscribe(topic, { qos: 1 }, (err) => {
     if (err) {
-      console.error('Error al suscribirse al tópico:', err);
+      console.error('Error al suscribirse al tópico MQTT:', err);
     } else {
-      console.log(`Suscrito al tópico: ${topic}`);
+      console.log(`Suscrito al tópico MQTT: ${topic}`);
     }
   });
 });
 
-// Manejo de mensajes MQTT entrantes
+// Manejar mensajes recibidos del tópico MQTT
 client.on('message', (topic, message) => {
-  const currentTime = Date.now();
+  const now = Date.now();
+  // Verificar si ha pasado suficiente tiempo desde el último mensaje para procesar uno nuevo
+  if (now - lastMessageTime >= messageDelay) {
+    lastMessageTime = now;
+    const uid_rfid = message.toString(); // Convertir el mensaje del tópico MQTT a cadena
+    autenticarUsuario(uid_rfid, io); // Llamar a la función para autenticar usuario y pasar el UID RFID y el objeto io de Socket.IO
+
+  } else console.log ("Mensaje recibido demasiado pronto")
   
-  // Verificar si ha pasado el tiempo suficiente desde el último mensaje procesado
-  if (currentTime - lastMessageTime >= messageDelay) {
-    lastMessageTime = currentTime; // Actualizar el tiempo del último mensaje procesado
-
-    const mensaje = message.toString();
-    const uid_rfid = extraerUidRfid(mensaje);
-    console.log(uid_rfid);
-    if (uid_rfid) {
-      console.log(`Mensaje recibido en ${topic}: ${uid_rfid}`);
-      autenticarUsuario(uid_rfid, io);
-
-      // Enviar el UID RFID a través de Socket.IO al cliente
-      io.emit('uid_rfid', uid_rfid);
-    } else {
-      console.log('No se encontró un número de uid_rfid válido en el mensaje:', mensaje);
-    }
-  } else {
-    console.log('Mensaje recibido demasiado pronto, ignorado:', message.toString());
-  }
 });
 
-// Manejo de errores en la conexión MQTT
-client.on('error', (err) => {
-  console.error('Error de conexión MQTT:', err);
+// Manejar eventos de Socket.IO
+io.on('connection', (socket) => {
+  // Eventos de conexión y desconexión de clientes Socket.IO
+  // Se pueden manejar otros eventos personalizados aquí según sea necesario
 });
 
-// Iniciar el servidor HTTP
-const PORT = process.env.PORT || 3000;
+// Configuración del puerto del servidor
+const PORT = process.env.PORT || 3000; // Puerto obtenido de las variables de entorno o predeterminado 3000
 server.listen(PORT, () => {
-  console.log(`Servidor corriendo en http://localhost:${PORT}`);
+  console.log(`Servidor API en ejecución en http://localhost:${PORT}`);
 });
-
-// Función para extraer el UID RFID del mensaje MQTT
-function extraerUidRfid(mensaje) {
-  const regex = /\[sn: (\d+)\]/;
-  const match = mensaje.match(regex);
-  return match ? match[1] : null;
-}
