@@ -22,18 +22,34 @@ router.get('/admin', async (req, res) => {
   }
 });
 
-// Ruta para agregar un usuario
-router.post('/admin/users', async (req, res) => {
+// Ruta para obtener todos los usuarios (endpoint JSON)
+router.get('/api/users', async (req, res) => {
+  let connection;
+  try {
+    connection = await pool.getConnection(); // Obtener conexión del pool
+    const [users] = await connection.execute('SELECT * FROM Usuarios');
+    res.json(users); // Devolver usuarios como JSON
+  } catch (err) {
+    console.error('Error al obtener usuarios:', err.message);
+    res.status(500).json({ error: 'Error al obtener usuarios' });
+  } finally {
+    if (connection) {
+      connection.release(); // Liberar conexión del pool al finalizar
+    }
+  }
+});
+
+// Ruta para agregar un usuario (endpoint JSON)
+router.post('/api/users', async (req, res) => {
   const { dni, nombre } = req.body;
   let connection;
   try {
     connection = await pool.getConnection(); // Obtener conexión del pool
-    // Insertar un nuevo usuario en la tabla Usuarios
     await connection.execute('INSERT INTO Usuarios (DNI, nombre) VALUES (?, ?)', [dni, nombre]);
-    res.redirect('/admin'); // Redirigir a la página de administración después de agregar
+    res.status(201).json({ message: 'Usuario agregado correctamente' });
   } catch (err) {
-    console.error('Error al agregar el usuario:', err.message);
-    res.status(500).send('Error al agregar el usuario');
+    console.error('Error al agregar usuario:', err.message);
+    res.status(500).json({ error: 'Error al agregar usuario' });
   } finally {
     if (connection) {
       connection.release(); // Liberar conexión del pool al finalizar
@@ -41,18 +57,34 @@ router.post('/admin/users', async (req, res) => {
   }
 });
 
-// Ruta para agregar una autenticación
-router.post('/admin/auth', async (req, res) => {
+// Ruta para obtener todas las autenticaciones (endpoint JSON)
+router.get('/api/auth', async (req, res) => {
+  let connection;
+  try {
+    connection = await pool.getConnection(); // Obtener conexión del pool
+    const [auths] = await connection.execute('SELECT * FROM Autenticacion');
+    res.json(auths); // Devolver autenticaciones como JSON
+  } catch (err) {
+    console.error('Error al obtener autenticaciones:', err.message);
+    res.status(500).json({ error: 'Error al obtener autenticaciones' });
+  } finally {
+    if (connection) {
+      connection.release(); // Liberar conexión del pool al finalizar
+    }
+  }
+});
+
+// Ruta para agregar una autenticación (endpoint JSON)
+router.post('/api/auth', async (req, res) => {
   const { uid_rfid, auth_dni } = req.body;
   let connection;
   try {
     connection = await pool.getConnection(); // Obtener conexión del pool
-    // Insertar una nueva autenticación en la tabla Autenticacion
     await connection.execute('INSERT INTO Autenticacion (uid_rfid, DNI) VALUES (?, ?)', [uid_rfid, auth_dni]);
-    res.redirect('/admin'); // Redirigir a la página de administración después de agregar
+    res.status(201).json({ message: 'Autenticación agregada correctamente' });
   } catch (err) {
-    console.error('Error al agregar la autenticación:', err.message);
-    res.status(500).send('Error al agregar la autenticación');
+    console.error('Error al agregar autenticación:', err.message);
+    res.status(500).json({ error: 'Error al agregar autenticación' });
   } finally {
     if (connection) {
       connection.release(); // Liberar conexión del pool al finalizar
@@ -60,18 +92,17 @@ router.post('/admin/auth', async (req, res) => {
   }
 });
 
-// Ruta para eliminar la autenticación de un usuario
-router.delete('/admin/auth/:uid_rfid', async (req, res) => {
+// Ruta para eliminar una autenticación por UID RFID (endpoint JSON)
+router.delete('/api/auth/:uid_rfid', async (req, res) => {
   const { uid_rfid } = req.params;
   let connection;
   try {
     connection = await pool.getConnection(); // Obtener conexión del pool
-    // Eliminar la autenticación de la tabla Autenticacion según el UID RFID
     await connection.execute('DELETE FROM Autenticacion WHERE uid_rfid = ?', [uid_rfid]);
-    res.redirect('/admin'); // Redirigir a la página de administración después de eliminar
+    res.json({ message: 'Autenticación eliminada correctamente' });
   } catch (err) {
-    console.error('Error al eliminar la autenticación:', err.message);
-    res.status(500).send('Error al eliminar la autenticación');
+    console.error('Error al eliminar autenticación:', err.message);
+    res.status(500).json({ error: 'Error al eliminar autenticación' });
   } finally {
     if (connection) {
       connection.release(); // Liberar conexión del pool al finalizar

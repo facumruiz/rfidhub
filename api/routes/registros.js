@@ -57,4 +57,22 @@ router.get('/', async (req, res) => {
   }
 });
 
+
+// Ruta para obtener todos los registros (endpoint JSON)
+router.get('/api/records', async (req, res) => {
+  let connection;
+  try {
+    connection = await pool.getConnection(); // Obtener conexión del pool
+    const [records] = await connection.execute('SELECT * FROM Registros');
+    res.json(records); // Devolver registros como JSON
+  } catch (err) {
+    console.error('Error al obtener registros:', err.message);
+    res.status(500).json({ error: 'Error al obtener registros' });
+  } finally {
+    if (connection) {
+      connection.release(); // Liberar conexión del pool al finalizar
+    }
+  }
+});
+
 module.exports = router; // Exportar el router con las rutas definidas

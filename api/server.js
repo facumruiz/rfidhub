@@ -3,6 +3,7 @@ require('dotenv').config();
 
 // Importar módulos y configuraciones necesarias
 const express = require('express');
+const cors = require('cors');
 const path = require('path');
 const http = require('http');
 const socketIo = require('socket.io');
@@ -15,6 +16,17 @@ const adminRouter = require('./routes/admin'); // Importar rutas para administra
 const app = express(); // Crear una instancia de la aplicación Express
 const server = http.createServer(app); // Crear servidor HTTP usando Express
 const io = socketIo(server); // Configurar Socket.IO para comunicación en tiempo real
+
+app.use(cors());
+app.use(express.json());
+
+
+
+const adminRoutes = require('./routes/admin');
+const registrosRoutes = require('./routes/registros');
+
+app.use('/api/admin', adminRoutes);
+app.use('/api/registros', registrosRoutes);
 
 // Configurar EJS como motor de vistas
 app.set('view engine', 'ejs'); // Configurar EJS como motor de plantillas

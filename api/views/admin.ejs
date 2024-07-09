@@ -31,7 +31,7 @@
       <!-- Formulario para agregar usuarios -->
       <div class="col-md-6">
         <h2>Agregar Usuario</h2>
-        <form id="addUserForm" method="POST" action="/admin/users">
+        <form id="addUserForm" method="POST" action="/api/users">
           <div class="form-group">
             <label for="dni">DNI:</label>
             <input type="text" class="form-control" id="dni" name="dni" required>
@@ -47,7 +47,7 @@
       <!-- Formulario para agregar autenticaciones -->
       <div class="col-md-6">
         <h2>Agregar Autenticación</h2>
-        <form id="addAuthForm" method="POST" action="/admin/auth">
+        <form id="addAuthForm" method="POST" action="/api/auth">
           <div class="form-group">
             <label for="uid_rfid">UID RFID:</label>
             <input type="text" class="form-control" id="uid_rfid" name="uid_rfid" required>
@@ -103,7 +103,7 @@
                 <td><%= auth.uid_rfid %></td>
                 <td><%= auth.DNI %></td>
                 <td>
-                  <form method="POST" action="/admin/auth/<%= auth.uid_rfid %>?_method=DELETE" style="display:inline;">
+                  <form method="POST" action="/api/auth/<%= auth.uid_rfid %>?_method=DELETE" style="display:inline;">
                     <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
                   </form>
                 </td>
