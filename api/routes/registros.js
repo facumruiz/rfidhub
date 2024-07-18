@@ -48,15 +48,18 @@ router.get('/', async (req, res) => {
     // Renderizar la vista 'registros' y pasar datos de registros, paginación y filtro de fecha
     res.render('registros', { rows, page, totalPages, fecha });
   } catch (err) {
-    console.error('Error al obtener los registros:', err.message);
-    res.status(500).send('Error al obtener los registros');
+    console.error('Error al obtener los registros:', err);
+    res.status(500).send('Error al obtener los registros. Por favor, inténtalo más tarde.');
   } finally {
     if (connection) {
-      connection.release(); // Liberar conexión del pool al finalizar
+      try {
+        connection.release(); // Liberar conexión del pool al finalizar
+      } catch (releaseErr) {
+        console.error('Error al liberar la conexión:', releaseErr);
+      }
     }
   }
 });
-
 
 // Ruta para obtener todos los registros (endpoint JSON)
 router.get('/api/records', async (req, res) => {
@@ -66,11 +69,15 @@ router.get('/api/records', async (req, res) => {
     const [records] = await connection.execute('SELECT * FROM Registros');
     res.json(records); // Devolver registros como JSON
   } catch (err) {
-    console.error('Error al obtener registros:', err.message);
-    res.status(500).json({ error: 'Error al obtener registros' });
+    console.error('Error al obtener registros:', err);
+    res.status(500).json({ error: 'Error al obtener registros. Por favor, inténtalo más tarde.' });
   } finally {
     if (connection) {
-      connection.release(); // Liberar conexión del pool al finalizar
+      try {
+        connection.release(); // Liberar conexión del pool al finalizar
+      } catch (releaseErr) {
+        console.error('Error al liberar la conexión:', releaseErr);
+      }
     }
   }
 });
