@@ -1,4 +1,4 @@
-# Backend (API) para el proyecto de LectorRFID
+# api-restful-v1
 
 ### Estructura del Proyecto
 
